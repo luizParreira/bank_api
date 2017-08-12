@@ -8,6 +8,7 @@ defmodule BankApi.Bank.Transaction do
     field :amount, :decimal
     field :date, :utc_datetime
     field :description, :string
+    field :checking_account_id, :integer
 
     timestamps()
   end
@@ -15,7 +16,7 @@ defmodule BankApi.Bank.Transaction do
   @doc false
   def changeset(%Transaction{} = transaction, attrs) do
     transaction
-    |> cast(attrs, [:amount, :date, :description])
-    |> validate_required([:amount, :date, :description])
+    |> cast(attrs, [:amount, :date, :description, :checking_account_id])
+    |> validate_required([:amount, :date, :description, :checking_account_id])
   end
 end
