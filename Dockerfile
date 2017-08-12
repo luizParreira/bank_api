@@ -1,16 +1,19 @@
-FROM bitwalker/alpine-elixir-phoenix:1.4.2
+FROM elixir:1.5.1-slim
 
-EXPOSE 4000
-ENV PORT=4000
+RUN apt-get update \
+    && apt-get install -y postgresql-client git
 
-RUN mix local.hex --force && mix local.rebar --force
-RUN apk --no-cache --update add postgresql-client inotify-tools bash git build-base libstdc++ python erlang-snmp erlang-dev \
-    && rm -rf /var/cache/apk/*
+ENV APP_HOME /app
+RUN mkdir -p $APP_HOME/tmp
 
-RUN mkdir /app
-WORKDIR /app
-ADD . .
+ENV HISTFILE $APP_HOME/tmp/docker_histfile
+ENV LANG C.UTF-8
 
-RUN mix deps.get
+RUN mix local.hex --force
+RUN mix local.rebar --force
 
-CMD ["mix", "phoenix.server"]
+WORKDIR $APP_HOME
+
+CMD ["mix", "deps.get"]
+CMD ["mix", "ecto.setup"]
+CMD ["mix", "phx.server"]
