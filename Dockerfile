@@ -14,6 +14,4 @@ RUN mix local.rebar --force
 
 WORKDIR $APP_HOME
 
-CMD ["mix", "deps.get"]
-CMD ["mix", "ecto.setup"]
-CMD ["mix", "phx.server"]
+CMD script/start.sh
