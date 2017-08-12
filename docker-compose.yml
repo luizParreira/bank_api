@@ -1,0 +1,11 @@
+api:
+  build: .
+  command: mix phoenix.server
+  ports:
+    - 4000:4000
+  volumes:
+    - .:/app
+  links:
+    - db
+db:
+  image: postgres:9.4
