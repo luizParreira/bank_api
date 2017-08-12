@@ -6,31 +6,32 @@ defmodule BankApi.BankTest do
   describe "transactions" do
     alias BankApi.Bank.Transaction
 
-    @valid_attrs %{amount: "120.5", date: ~N[2010-04-17 14:00:00.000000Z], description: "some description"}
-    @update_attrs %{amount: "456.7", date: ~N[2011-05-18 15:01:01.000000Z], description: "some updated description"}
-    @invalid_attrs %{amount: nil, date: nil, description: nil}
+    @valid_attrs %{
+      amount: "120.5",
+      date: ~N[2010-04-17 14:00:00.000000Z],
+      description: "some description",
+      checking_account_id: nil}
 
-    def transaction_fixture(attrs \\ %{}) do
-      {:ok, transaction} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Bank.create_transaction()
+    @invalid_attrs %{amount: nil, date: nil, description: nil, checking_account_id: nil}
 
-      transaction
+    setup do
+      {:ok, account} = Bank.create_checking_account(%{name: "some name"})
+
+      {:ok, attrs: %{ @valid_attrs | checking_account_id: account.id } }
     end
 
-    test "list_transactions/0 returns all transactions" do
-      transaction = transaction_fixture()
+    test "list_transactions/0 returns all transactions", %{attrs: attributes} do
+      {:ok, transaction} = Bank.create_transaction(attributes)
       assert Bank.list_transactions() == [transaction]
     end
 
-    test "get_transaction!/1 returns the transaction with given id" do
-      transaction = transaction_fixture()
+    test "get_transaction!/1 returns the transaction with given id", %{attrs: attributes} do
+      {:ok, transaction} = Bank.create_transaction(attributes)
       assert Bank.get_transaction!(transaction.id) == transaction
     end
 
-    test "create_transaction/1 with valid data creates a transaction" do
-      assert {:ok, %Transaction{} = transaction} = Bank.create_transaction(@valid_attrs)
+    test "create_transaction/1 with valid data creates a transaction", %{attrs: attributes} do
+      assert {:ok, %Transaction{} = transaction} = Bank.create_transaction(attributes)
       assert transaction.amount == Decimal.new("120.5")
       assert transaction.date == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
       assert transaction.description == "some description"
@@ -40,30 +41,49 @@ defmodule BankApi.BankTest do
       assert {:error, %Ecto.Changeset{}} = Bank.create_transaction(@invalid_attrs)
     end
 
-    test "update_transaction/2 with valid data updates the transaction" do
-      transaction = transaction_fixture()
-      assert {:ok, transaction} = Bank.update_transaction(transaction, @update_attrs)
-      assert %Transaction{} = transaction
-      assert transaction.amount == Decimal.new("456.7")
-      assert transaction.date == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
-      assert transaction.description == "some updated description"
-    end
-
-    test "update_transaction/2 with invalid data returns error changeset" do
-      transaction = transaction_fixture()
-      assert {:error, %Ecto.Changeset{}} = Bank.update_transaction(transaction, @invalid_attrs)
-      assert transaction == Bank.get_transaction!(transaction.id)
-    end
-
-    test "delete_transaction/1 deletes the transaction" do
-      transaction = transaction_fixture()
-      assert {:ok, %Transaction{}} = Bank.delete_transaction(transaction)
-      assert_raise Ecto.NoResultsError, fn -> Bank.get_transaction!(transaction.id) end
-    end
-
-    test "change_transaction/1 returns a transaction changeset" do
-      transaction = transaction_fixture()
+    test "change_transaction/1 returns a transaction changeset", %{attrs: attributes} do
+      {:ok, transaction} = Bank.create_transaction(attributes)
       assert %Ecto.Changeset{} = Bank.change_transaction(transaction)
+    end
+  end
+
+  describe "checking_accounts" do
+    alias BankApi.Bank.CheckingAccount
+
+    @valid_attrs %{name: "some name"}
+    @invalid_attrs %{name: nil}
+
+    def checking_account_fixture(attrs \\ %{}) do
+      {:ok, checking_account} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Bank.create_checking_account()
+
+      checking_account
+    end
+
+    test "list_checking_accounts/0 returns all checking_accounts" do
+      checking_account = checking_account_fixture()
+      assert Bank.list_checking_accounts() == [checking_account]
+    end
+
+    test "get_checking_account!/1 returns the checking_account with given id" do
+      checking_account = checking_account_fixture()
+      assert Bank.get_checking_account!(checking_account.id) == checking_account
+    end
+
+    test "create_checking_account/1 with valid data creates a checking_account" do
+      assert {:ok, %CheckingAccount{} = checking_account} = Bank.create_checking_account(@valid_attrs)
+      assert checking_account.name == "some name"
+    end
+
+    test "create_checking_account/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Bank.create_checking_account(@invalid_attrs)
+    end
+
+    test "change_checking_account/1 returns a checking_account changeset" do
+      checking_account = checking_account_fixture()
+      assert %Ecto.Changeset{} = Bank.change_checking_account(checking_account)
     end
   end
 end
