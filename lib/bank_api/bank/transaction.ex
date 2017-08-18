@@ -3,7 +3,6 @@ defmodule BankApi.Bank.Transaction do
   import Ecto.Changeset
   alias BankApi.Bank.Transaction
 
-
   schema "transactions" do
     field :amount, :decimal
     field :date, :utc_datetime
