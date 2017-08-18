@@ -5,20 +5,18 @@ defmodule BankApi.Bank do
 
   import Ecto.Query, warn: false
   alias BankApi.Repo
-
   alias BankApi.Bank.Transaction
 
+  @doc """
+  Creates a Credit `Transaction` with `params` on the db.
+  """
   defdelegate credit(params), to: BankApi.Bank.Credit
 
   @doc """
-  Returns the list of transactions.
-
-  ## Examples
-
-      iex> list_transactions()
-      [%Transaction{}, ...]
-
+  Creates a Debit`Transaction` with `params` on the db.
   """
+  defdelegate debit(params), to: BankApi.Bank.Debit
+
   def list_transactions do
     Repo.all(Transaction)
   end
