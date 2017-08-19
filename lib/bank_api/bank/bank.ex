@@ -10,7 +10,7 @@ defmodule BankApi.Bank do
   @doc """
   Creates a Credit `Transaction` with `params` on the db.
   """
-  defdelegate credit(params), to: BankApi.Bank.Credit
+  defdelegate credit(id, amount, date, description), to: BankApi.Bank.Credit
 
   @doc """
   Creates a Debit`Transaction` with `params` on the db.

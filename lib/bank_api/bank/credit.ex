@@ -6,9 +6,8 @@ defmodule BankApi.Bank.Credit do
   alias BankApi.Bank
   alias BankApi.Bank.ParamsCaster
 
-  def credit(params) do
-    params
-    |> ParamsCaster.cast
+  def credit(id, amount, date, desc) do
+    %{checking_account_id: id, amount: amount, description: desc, date: date}
     |> Bank.create_transaction
   end
 end
