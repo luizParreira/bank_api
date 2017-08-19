@@ -20,9 +20,25 @@ defmodule BankApi.BankTest do
       {:ok, attrs: %{@valid_attrs | checking_account_id: account.id}}
     end
 
+    test "calculate_balance/1 calculates user balance", %{attrs: attr} do
+      {:ok, _} = Bank.create_transaction(attr)
+      {:ok, _} = Bank.create_transaction(%{attr | amount: "123.0"})
+
+      assert Bank.calculate_balance(attr.checking_account_id) == Decimal.new("243.5")
+    end
+
     test "list_transactions/0 returns all transactions", %{attrs: attributes} do
       {:ok, transaction} = Bank.create_transaction(attributes)
       assert Bank.list_transactions() == [transaction]
+    end
+
+    test "list_transactions/1 returns all transactions for given user", %{attrs: attr} do
+      {:ok, account} = Bank.create_checking_account(%{name: "some other account"})
+      {:ok, transaction} = Bank.create_transaction(attr)
+      {:ok, transaction1} = Bank.create_transaction(%{attr | checking_account_id: account.id})
+
+      assert Bank.list_transactions(attr.checking_account_id) == [transaction]
+      assert Bank.list_transactions(account.id) == [transaction1]
     end
 
     test "get_transaction!/1 returns the transaction with given id", %{attrs: attributes} do
@@ -45,6 +61,7 @@ defmodule BankApi.BankTest do
       {:ok, transaction} = Bank.create_transaction(attributes)
       assert %Ecto.Changeset{} = Bank.change_transaction(transaction)
     end
+
   end
 
   describe "checking_accounts" do

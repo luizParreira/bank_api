@@ -21,6 +21,18 @@ defmodule BankApi.Bank do
     Repo.all(Transaction)
   end
 
+  def list_transactions(checking_account_id) do
+    Repo.all(from t in Transaction,
+             where: t.checking_account_id == ^checking_account_id)
+  end
+
+  def calculate_balance(id) do
+    id
+    |> list_transactions
+    |> Enum.map(&(&1.amount))
+    |> Enum.reduce(Decimal.new(0), &Decimal.add/2)
+  end
+
   def get_transaction!(id), do: Repo.get!(Transaction, id)
 
   def create_transaction(attrs \\ %{}) do
