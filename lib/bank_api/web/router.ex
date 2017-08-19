@@ -9,6 +9,6 @@ defmodule BankApi.Web.Router do
     pipe_through :api
 
     post "/transactions/:checking_account_id/credit/:amount", TransactionsController, :credit
-    #post "/transactions/:checking_account_id/debit/:amount", TransactionsController, :debit
+    post "/transactions/:checking_account_id/debit/:amount", TransactionsController, :debit
   end
 end
