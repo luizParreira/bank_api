@@ -8,14 +8,14 @@ defmodule BankApi.Bank do
   alias BankApi.Bank.Transaction
 
   @doc """
-  Creates a Credit `Transaction` with `params` on the db.
+  Function responsible for creating a transaction on the DB
   """
-  defdelegate credit(id, amount, date, description), to: BankApi.Bank.Credit
-
-  @doc """
-  Creates a Debit`Transaction` with `params` on the db.
-  """
-  defdelegate debit(params), to: BankApi.Bank.Debit
+  def transact(id, amount, date, desc) do
+    case create_transaction(%{checking_account_id: id, amount: amount, description: desc, date: date}) do
+      {:ok, transaction} -> transaction
+      {:error, error} -> error
+    end
+  end
 
   def list_transactions do
     Repo.all(Transaction)
@@ -40,13 +40,7 @@ defmodule BankApi.Bank do
   end
 
   def get_checking_account!(id), do: Repo.get!(CheckingAccount, id)
-
-  def get_checking_account(id) do
-    match_checking_account(Repo.get(CheckingAccount, id))
-  end
-
-  defp match_checking_account(nil), do: {:not_found, nil}
-  defp match_checking_account(account), do: {:ok, account}
+  def get_checking_account(id), do: Repo.get(CheckingAccount, id)
 
   def create_checking_account(attrs \\ %{}) do
     %CheckingAccount{}

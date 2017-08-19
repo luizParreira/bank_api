@@ -17,7 +17,7 @@ defmodule BankApi.BankTest do
     setup do
       {:ok, account} = Bank.create_checking_account(%{name: "some name"})
 
-      {:ok, attrs: %{ @valid_attrs | checking_account_id: account.id } }
+      {:ok, attrs: %{@valid_attrs | checking_account_id: account.id}}
     end
 
     test "list_transactions/0 returns all transactions", %{attrs: attributes} do
