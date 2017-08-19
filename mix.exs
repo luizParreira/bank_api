@@ -34,7 +34,6 @@ defmodule BankApi.Mixfile do
      {:postgrex, ">= 0.0.0"},
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
-     {:timex, "~> 3.0"},
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false}]
   end
 
