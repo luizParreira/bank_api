@@ -2,11 +2,15 @@ defmodule BankApi.Web.ErrorView do
   use BankApi.Web, :view
 
   def render("404.json", _assigns) do
-    %{errors: %{detail: "Page not found"}}
+    %{error: %{type: "NotFound", message: "Account does not exist"}}
+  end
+
+  def render("400.json", _assigns) do
+    %{error: %{type: "BadRequest", message: "bad request"}}
   end
 
   def render("500.json", _assigns) do
-    %{errors: %{detail: "Internal server error"}}
+    %{error: %{detail: "Internal server error"}}
   end
 
   # In case no render clause matches or no
