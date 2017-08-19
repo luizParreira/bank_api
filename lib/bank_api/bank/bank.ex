@@ -42,8 +42,7 @@ defmodule BankApi.Bank do
   def get_checking_account!(id), do: Repo.get!(CheckingAccount, id)
 
   def get_checking_account(id) do
-    Repo.get(CheckingAccount, id)
-    |> match_checking_account
+    match_checking_account(Repo.get(CheckingAccount, id))
   end
 
   defp match_checking_account(nil), do: {:not_found, nil}
