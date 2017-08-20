@@ -23,8 +23,7 @@ defmodule BankApi.Bank do
 
   def list_transactions(checking_account_id) do
     Repo.all(from t in Transaction,
-             where: t.checking_account_id == ^checking_account_id and
-             t.date <= ^DateTime.utc_now,
+             where: t.checking_account_id == ^checking_account_id,
              order_by: [asc: t.date])
   end
 
@@ -33,7 +32,7 @@ defmodule BankApi.Bank do
   def list_transactions(checking_account_id, date) do
     Repo.all(from t in Transaction,
              where: t.checking_account_id == ^checking_account_id and
-             fragment("?::date", t.date) <= ^date,
+             t.date <= ^date,
              order_by: [asc: t.date])
   end
 
@@ -42,8 +41,8 @@ defmodule BankApi.Bank do
   def list_transactions(checking_account_id, start_date, end_date) do
     Repo.all(from t in Transaction,
              where: t.checking_account_id == ^checking_account_id and
-             fragment("?::date", t.date) >= ^start_date and
-             fragment("?::date", t.date) <= ^end_date,
+             t.date >= ^start_date and
+             t.date <= ^end_date,
              order_by: [asc: t.date])
   end
 

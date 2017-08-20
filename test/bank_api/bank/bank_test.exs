@@ -24,7 +24,17 @@ defmodule BankApi.BankTest do
       {:ok, _} = Bank.create_transaction(attr)
       {:ok, _} = Bank.create_transaction(%{attr | amount: "123.0"})
 
-      assert Bank.calculate_balance(attr.checking_account_id) == Decimal.new("243.5")
+      assert Bank.calculate_balance(attr.checking_account_id) == 243.5
+    end
+
+    test "calculate_balance/2 calculates user balance given date", %{attrs: attr} do
+      {:ok, _} = Bank.create_transaction(attr)
+      date = ~N[2010-04-18 14:00:00Z]
+      {:ok, _} = Bank.create_transaction(%{attr | amount: "-223.0", date: date})
+      date1 = ~N[2010-04-19 14:00:00Z]
+      {:ok, _} = Bank.create_transaction(%{attr | amount: "123.0", date: date1})
+
+      assert Bank.calculate_balance(attr.checking_account_id, date) == -102.5
     end
 
     test "list_transactions/0 returns all transactions", %{attrs: attributes} do
@@ -39,6 +49,32 @@ defmodule BankApi.BankTest do
 
       assert Bank.list_transactions(attr.checking_account_id) == [transaction]
       assert Bank.list_transactions(account.id) == [transaction1]
+    end
+
+    test "list_transactions/2 returns all transactions for given user until a given date", %{attrs: attr} do
+      {:ok, transaction} = Bank.create_transaction(attr)
+      date = ~N[2010-04-18 14:00:00Z]
+      {:ok, transaction1} = Bank.create_transaction(%{attr | date: date})
+      date1 = ~N[2010-04-19 14:00:00Z]
+      {:ok, _transaction2}  = Bank.create_transaction(%{attr | date: date1})
+
+      assert Enum.map(Bank.list_transactions(attr.checking_account_id, date), &(&1.id)) ==
+        [transaction.id, transaction1.id]
+    end
+
+    test "list_transactions/3 returns all transactions for given user within a date range", %{attrs: attr} do
+      {:ok, _transaction} = Bank.create_transaction(attr)
+      date = ~N[2010-04-18 14:00:00Z]
+      {:ok, transaction1} = Bank.create_transaction(%{attr | date: date})
+      date1 = ~N[2010-04-19 14:00:00Z]
+      {:ok, transaction2}  = Bank.create_transaction(%{attr | date: date1})
+      date2 = ~N[2010-04-20 14:00:00Z]
+      {:ok, transaction3} = Bank.create_transaction(%{attr | date: date2})
+      date3 = ~N[2010-04-21 14:00:00Z]
+      {:ok, _transaction4} = Bank.create_transaction(%{attr | date: date3})
+
+      assert Enum.map(Bank.list_transactions(attr.checking_account_id, date, date2), &(&1.id)) ==
+        [transaction1.id, transaction2.id, transaction3.id]
     end
 
     test "get_transaction!/1 returns the transaction with given id", %{attrs: attributes} do
