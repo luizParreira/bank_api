@@ -23,14 +23,36 @@ defmodule BankApi.Bank do
 
   def list_transactions(checking_account_id) do
     Repo.all(from t in Transaction,
-             where: t.checking_account_id == ^checking_account_id)
+             where: t.checking_account_id == ^checking_account_id and
+             t.date <= ^DateTime.utc_now,
+             order_by: [asc: t.date])
   end
 
-  def calculate_balance(id) do
-    id
-    |> list_transactions
+
+  def list_transactions(checking_account_id, nil), do: list_transactions(checking_account_id)
+  def list_transactions(checking_account_id, date) do
+    Repo.all(from t in Transaction,
+             where: t.checking_account_id == ^checking_account_id and
+             fragment("?::date", t.date) <= ^date,
+             order_by: [asc: t.date])
+  end
+
+
+  def list_transactions(checking_account_id, nil, nil), do: list_transactions(checking_account_id)
+  def list_transactions(checking_account_id, start_date, end_date) do
+    Repo.all(from t in Transaction,
+             where: t.checking_account_id == ^checking_account_id and
+             fragment("?::date", t.date) >= ^start_date and
+             fragment("?::date", t.date) <= ^end_date,
+             order_by: [asc: t.date])
+  end
+
+  def calculate_balance(checking_account_id, date \\ nil) do
+    checking_account_id
+    |> list_transactions(date)
     |> Enum.map(&(&1.amount))
     |> Enum.reduce(Decimal.new(0), &Decimal.add/2)
+    |> Decimal.to_float
   end
 
   def get_transaction!(id), do: Repo.get!(Transaction, id)
