@@ -59,12 +59,17 @@ defmodule BankApi.Web.StatementControllerTest do
       conn = get conn, statement_path(conn, :statement, id)
 
       expected_response = [
-        %{"2010-03-17" => [%{"description" => "payment from Jose", "amount" => "302.0", "ts" => 1268834400}], "balance" => "302.0"},
-        %{"2010-04-15" => [%{"description" => "Deposit", "amount" => "150.0", "ts" => 1271340000}], "balance" => "452.0"},
-        %{"2010-04-17"=> [%{"description" => "Went out for drinks", "amount" => "-150.0", "ts" => 1271512800},
-                        %{"description" => "payment from Ana","amount" => "213.50", "ts" => 1271548740}], "balance" => "515.5"},
-        %{"2010-04-18" => [%{"description" => "Bought books on Amazon", "amount" => "-150.0", "ts" => 1271599200}], "balance" => "365.5"},
-        %{"2010-04-19" => [%{"description" => "Deposit" ,"amount" => "200.50" ,"ts" => 1271707200}], "balance" => "566"}]
+        %{"transactions" => [%{"description" => "payment from Jose", "amount" => 302.0, "ts" => 1268834400}],
+          "balance" => 302.0, "date" => "2010-03-17"},
+        %{"transactions" => [%{"description" => "Deposit", "amount" => 150.0, "ts" => 1271340000}],
+          "date" => "2010-04-15",  "balance" => 452.0},
+        %{"transactions"=> [%{"description" => "Went out for drinks", "amount" => -150.0, "ts" => 1271512800},
+                            %{"description" => "payment from Ana","amount" => 213.5, "ts" => 1271548740}],
+          "date" => "2010-04-17", "balance" => 515.5},
+        %{"transactions" => [%{"description" => "Bought books on Amazon", "amount" => -150.0, "ts" => 1271599200}],
+          "date" => "2010-04-18", "balance" => 365.5},
+        %{"transactions" => [%{"description" => "Deposit" ,"amount" => 200.5,"ts" => 1271707200}],
+          "date" => "2010-04-19", "balance" => 566.0}]
 
 
       assert json_response(conn, 200)["data"] == expected_response
@@ -74,11 +79,14 @@ defmodule BankApi.Web.StatementControllerTest do
       params = %{"start_date" => "2010-04-15", "end_date" => "2010-04-18"}
       conn = get conn, statement_path(conn, :statement, id, params)
 
-      expected_response = %{
-        "2010-04-15" => [%{"description" => "Deposit", "amount" => "150.0", "ts" => 1271340000}],
-        "2010-04-17"=> [%{"description" => "Went out for drinks", "amount" => "-150.0", "ts" => 1271512800},
-                        %{"description" => "payment from Ana", "amount" => "213.50", "ts" => 1271548740}],
-        "2010-04-18" => [%{"description" => "Bought books on Amazon", "amount" => "-150.0", "ts" => 1271599200}]}
+      expected_response = [
+        %{"transactions" => [%{"description" => "Deposit", "amount" => 150.0, "ts" => 1271340000}],
+          "date" => "2010-04-15",  "balance" => 452.0},
+        %{"transactions"=> [%{"description" => "Went out for drinks", "amount" => -150.0, "ts" => 1271512800},
+                            %{"description" => "payment from Ana","amount" => 213.5, "ts" => 1271548740}],
+          "date" => "2010-04-17", "balance" => 515.5},
+        %{"transactions" => [%{"description" => "Bought books on Amazon", "amount" => -150.0, "ts" => 1271599200}],
+          "date" => "2010-04-18", "balance" => 365.5}]
 
 
       assert json_response(conn, 200)["data"] == expected_response

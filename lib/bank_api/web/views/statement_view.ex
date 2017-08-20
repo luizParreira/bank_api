@@ -1,7 +1,7 @@
 defmodule BankApi.Web.StatementView do
   use BankApi.Web, :view
 
-  def render("statement.json", %{balance: statement}) do
+  def render("statement.json", %{statement: statement}) do
     %{data: statement}
   end
 
