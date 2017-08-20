@@ -4,28 +4,38 @@ defmodule BankApi.Bank.BuildStatement do
   """
 
   alias BankApi.Bank
+  alias Bank.DateParser
 
   def build(id), do: build(id, nil, nil)
   def build(id, start_date, end_date) do
     id
     |> Bank.list_transactions(start_date, end_date)
-    |> Enum.group_by(&date_group_by/1, &build_day_statement/1)
-    |> Enum.map(fn {k, v} -> calculate_current_balance(id, k, v) end)
+    |> Enum.group_by(&date/1, &transactions/1)
+    |> Enum.map(fn {date, transactions} -> build_statement(id, date, transactions) end)
   end
 
-  defp calculate_current_balance(id, date, transactions) do
-    %{date |> DateTime.from_unix! |> DateTime.to_date |> Date.to_string => transactions,
-      "balance" => Bank.calculate_balance(id, date |> DateTime.from_unix! |> DateTime.to_date)}
+  defp build_statement(id, date, transactions) do
+    %{"date" => timestamp_to_date_string(date),
+     "transactions" => transactions,
+      "balance" => Bank.calculate_balance(id, DateParser.end_of_day!(date))}
   end
 
-  defp date_group_by(transaction) do
+  defp timestamp_to_date_string(date) do
+    date
+    |> DateTime.from_unix!
+    |> DateTime.to_date
+    |> Date.to_string
+  end
+
+  defp date(transaction) do
     transaction.date
+    |> DateParser.start_of_day!
     |> DateTime.to_unix
   end
 
-  defp build_day_statement(transaction) do
+  defp transactions(transaction) do
     %{"description" => transaction.description,
-      "amount" => transaction.amount |> Decimal.to_float,
+      "amount" => Decimal.to_float(transaction.amount),
       "ts" => DateTime.to_unix(transaction.date)}
   end
 end
