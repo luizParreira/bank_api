@@ -10,7 +10,7 @@ defmodule BankApi.Bank.AmountValidator do
   end
 
   def _validate(:error, _op), do: :error
-  def _validate({amount, _}, operations) when amount <= 0, do: :error
+  def _validate({amount, _}, _operations) when amount <= 0, do: :error
   def _validate({amount, _}, :credit), do: {:ok, amount}
   def _validate({amount, _}, :debit), do: {:ok, -amount}
 end

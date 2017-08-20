@@ -3,7 +3,6 @@ defmodule BankApi.Web.BalanceController do
 
   alias BankApi.Bank
   alias Bank.CheckingAccount
-  alias Bank.Transaction
 
   action_fallback BankApi.Web.FallbackController
 

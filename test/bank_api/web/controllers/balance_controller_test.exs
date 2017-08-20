@@ -38,7 +38,7 @@ defmodule BankApi.Web.BalanceControllerTest do
     test "when balance is positive", %{conn: conn, id: id} do
       conn = get conn, balance_path(conn, :balance, id)
 
-      assert json_response(conn, 200)["data"] == %{"balance" => "200.50"}
+      assert json_response(conn, 200)["data"] == %{"balance" => 200.5}
     end
 
     test "when balance is negative", %{conn: conn, id: id} do
@@ -50,7 +50,7 @@ defmodule BankApi.Web.BalanceControllerTest do
       Bank.create_transaction(extra_transaction)
       conn = get conn, balance_path(conn, :balance, id)
 
-      assert json_response(conn, 200)["data"] == %{"balance" => "-99.50"}
+      assert json_response(conn, 200)["data"] == %{"balance" => -99.5}
     end
 
     test "when account does not exist", %{conn: conn, id: _id} do
