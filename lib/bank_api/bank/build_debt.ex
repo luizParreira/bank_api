@@ -19,7 +19,7 @@ defmodule BankApi.Bank.BuildDebt do
   def _build([{balance, date}], debts) when balance < 0 do
     _build([], [{date, nil, abs(balance)} | debts])
   end
-  def _build([{balance_a, date_a},{balance_b, date_b}], debts) when balance_a < 0 and balance_a != balance_b do
+  def _build([{balance_a, date_a}, {balance_b, date_b}], debts) when balance_a < 0 and balance_a != balance_b do
     _build([{balance_b, date_b}], [{date_a, date_b, abs(balance_a)} | debts])
   end
   def _build([{balance_a, sd}, {balance_b, ed} | statements], debts) when balance_a < 0 and balance_a != balance_b do
