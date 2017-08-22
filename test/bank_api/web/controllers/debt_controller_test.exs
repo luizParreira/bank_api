@@ -21,24 +21,21 @@ defmodule BankApi.Web.DebtControllerTest do
     amount: "-1239.99",
     checking_account_id: nil}
 
-  @transaction_3 %{
+  @transaction_4 %{
     description: "Deposit",
     date: DateTime.from_naive!(~N[2010-04-20 20:00:00.000000Z], "Etc/UTC"),
     amount: "1000.0",
     checking_account_id: nil}
 
   @expected_response [
-    %{"principal" =>  248.0, "start" => 1269525600, "end" => 1269547200},
-    %{"principal" => 1185.99, "start" => 1271178000, "end" => 1271340000},
-    %{"principal" => 1035.99, "start" => 1271340000, "end" => 1271512800},
-    %{"principal" => 1185.99, "start" => 1271512800, "end" => 1271548740},
-    %{"principal" =>  972.49, "start" => 1271548740, "end" => 1271599200},
-    %{"principal" => 1122.49, "start" => 1271599200, "end" => 1271707200},
-    %{"principal" =>  921.99, "start" => 1271707200, "end" => 1271793600}
+    %{"principal" => 1185.99, "start" => "2010-04-13", "end" => "2010-04-15"},
+    %{"principal" => 1035.99, "start" => "2010-04-15", "end" => "2010-04-17"},
+    %{"principal" =>  972.49, "start" => "2010-04-17", "end" => "2010-04-18"},
+    %{"principal" => 1122.49, "start" => "2010-04-18", "end" => "2010-04-19"},
+    %{"principal" =>  921.99, "start" => "2010-04-19", "end" => "2010-04-20"}
   ]
 
-
-  @transactions [@transaction_1, @transaction_2, @transaction_3]
+  @transactions [@transaction_1, @transaction_2, @transaction_3, @transaction_4]
 
   setup %{conn: conn} do
     conn = put_req_header(conn, "accept", "application/json")
@@ -52,7 +49,6 @@ defmodule BankApi.Web.DebtControllerTest do
   end
 
   describe "periods_of_debt/2" do
-
     test "when the user is not currently in debt", %{conn: conn, id: id} do
       conn = get conn, debt_path(conn, :periods_of_debt, id)
 
@@ -60,16 +56,18 @@ defmodule BankApi.Web.DebtControllerTest do
     end
 
     test "when the user is currently in debt", %{conn: conn, id: id} do
-      conn = get conn, debt_path(conn, :periods_of_debt, id)
       attrs = %{
         date: DateTime.from_naive!(~N[2010-04-21 17:00:00.000000Z], "Etc/UTC"),
         amount: "-100.0",
         checking_account_id: id,
         description: "went out for dinner"}
 
-      {:ok, transaction} = Bank.create_transaction(attrs)
+      {:ok, _transaction} = Bank.create_transaction(attrs)
+      conn = get conn, debt_path(conn, :periods_of_debt, id)
 
-      response = @expected_response ++ [%{"principal" =>  21.99, "start" => 1271869200, "end" => nil}]
+      response = @expected_response ++ [
+        %{"principal" =>  21.99, "start" => "2010-04-21", "end" => nil}
+      ]
       assert json_response(conn, 200)["data"] == response
     end
 
