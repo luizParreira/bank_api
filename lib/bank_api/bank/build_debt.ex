@@ -4,28 +4,28 @@ defmodule BankApi.Bank.BuildDebt do
   """
 
   alias BankApi.Bank
-  alias Bank.BuildStatement
+  alias Bank.Statement
 
   def build(id) do
     id
-    |> BuildStatement.build
+    |> Statement.build
     |> Enum.map(&({&1["balance"], &1["date"]}))
-    |> _build([])
+    |> build_debt_statement([])
     |> Enum.map(fn {sd, ed, p} -> %{"start" => sd, "end" => ed, "principal" => p} end)
     |> Enum.reverse
   end
 
-  def _build([], debt), do: debt
-  def _build([{balance, date}], debts) when balance < 0 do
-    _build([], [{date, nil, abs(balance)} | debts])
+  def build_debt_statement([], debts), do: debts
+  def build_debt_statement([{balance, date}], debts) when balance < 0 do
+    build_debt_statement([], [{date, nil, abs(balance)} | debts])
   end
-  def _build([{balance_a, date_a}, {balance_b, date_b}], debts) when balance_a < 0 and balance_a != balance_b do
-    _build([{balance_b, date_b}], [{date_a, date_b, abs(balance_a)} | debts])
+  def build_debt_statement([{balance_a, date_a}, {balance_b, date_b}], debts) when balance_a < 0 and balance_a != balance_b do
+    build_debt_statement([{balance_b, date_b}], [{date_a, date_b, abs(balance_a)} | debts])
   end
-  def _build([{balance_a, sd}, {balance_b, ed} | statements], debts) when balance_a < 0 and balance_a != balance_b do
-    _build([{balance_b, ed} | statements], [{sd, ed, abs(balance_a)} | debts])
+  def build_debt_statement([{balance_a, sd}, {balance_b, ed} | statements], debts) when balance_a < 0 and balance_a != balance_b do
+    build_debt_statement([{balance_b, ed} | statements], [{sd, ed, abs(balance_a)} | debts])
   end
-  def _build([{_balance, _date} | statements], debts) do
-    _build(statements, debts)
+  def build_debt_statement([{_balance, _date} | statements], debts) do
+    build_debt_statement(statements, debts)
   end
 end

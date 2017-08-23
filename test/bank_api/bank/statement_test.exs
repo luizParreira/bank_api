@@ -1,8 +1,8 @@
-defmodule BankApi.BuildStatementTest do
+defmodule BankApi.StatementTest do
   use BankApi.DataCase
 
   alias BankApi.Bank
-  alias Bank.BuildStatement
+  alias Bank.Statement
   alias BankApi.TransactionsHelper
 
   setup do
@@ -11,10 +11,9 @@ defmodule BankApi.BuildStatementTest do
     {:ok, id: account.id}
   end
 
-  describe "build_statement/3" do
-
+  describe "build/1" do
     test "when no date is passed in", %{id: id} do
-      statement = BuildStatement.build(id)
+      statement = Statement.build(id)
 
       expected_response = [
         %{"transactions" => [%{"description" => "payment from Jose", "amount" => 302.0, "ts" => 1268834400}],
@@ -31,11 +30,13 @@ defmodule BankApi.BuildStatementTest do
 
         assert statement == expected_response
     end
+  end
 
+  describe "build/3" do
     test "when start date and end date is passed in", %{id: id} do
       {:ok, start_date} = DateTime.from_naive(~N[2010-04-15 00:00:00], "Etc/UTC")
       {:ok, end_date} = DateTime.from_naive(~N[2010-04-18 23:59:59], "Etc/UTC")
-      statement = BuildStatement.build(id, start_date, end_date)
+      statement = Statement.build(id, start_date, end_date)
 
       expected_response = [
         %{"transactions" => [%{"description" => "Deposit", "amount" => 150.0, "ts" => 1271340000}],
