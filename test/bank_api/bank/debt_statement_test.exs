@@ -1,4 +1,4 @@
-defmodule BankApi.BuildDebtTest do
+defmodule BankApi.DebtStatementTest do
   use BankApi.DataCase
 
   alias BankApi.Bank
@@ -52,7 +52,7 @@ defmodule BankApi.BuildDebtTest do
   describe "build/1" do
 
     test "when the user is not currently in debt", %{id: id} do
-      user_debt = BuildDebt.build(id)
+      user_debt = DebtStatement.build(id)
 
       assert @expected_response == user_debt
     end
@@ -70,7 +70,7 @@ defmodule BankApi.BuildDebtTest do
         %{"principal" =>  21.99, "start" => "2010-04-21", "end" => nil}
       ]
 
-      assert response == BuildDebt.build(id)
+      assert response == DebtStatement.build(id)
     end
   end
 end

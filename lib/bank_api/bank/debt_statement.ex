@@ -1,4 +1,4 @@
-defmodule BankApi.Bank.BuildDebt do
+defmodule BankApi.Bank.DebtStatement do
   @moduledoc """
   Module responsible for building user's debt for the API response
   """

@@ -1,8 +1,8 @@
 defmodule BankApi.Web.DebtView do
   use BankApi.Web, :view
 
-  def render("debt.json", %{debt: debt}) do
-    %{data: debt}
+  def render("debt.json", %{debt_statement: debt_statement}) do
+    %{data: debt_statement}
   end
 
   # In case no render clause matches or no
