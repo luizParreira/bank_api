@@ -10,22 +10,34 @@ defmodule BankApi.Bank.DebtStatement do
     id
     |> Statement.build
     |> Enum.map(&({&1["balance"], &1["date"]}))
-    |> build_debt_statement([])
-    |> Enum.map(fn {sd, ed, p} -> %{"start" => sd, "end" => ed, "principal" => p} end)
+    |> build_statement([])
+    |> Enum.map(fn {sd, ed, p} -> %{"start" => sd, "end" => end_date(ed), "principal" => p} end)
     |> Enum.reverse
   end
 
-  def build_debt_statement([], debts), do: debts
-  def build_debt_statement([{balance, date}], debts) when balance < 0 do
-    build_debt_statement([], [{date, nil, abs(balance)} | debts])
+  defp build_statement([], debts), do: debts
+  defp build_statement([{balance, date}], debts) when balance < 0 do
+    build_statement([], [{date, nil, abs(balance)} | debts])
   end
-  def build_debt_statement([{balance_a, date_a}, {balance_b, date_b}], debts) when balance_a < 0 and balance_a != balance_b do
-    build_debt_statement([{balance_b, date_b}], [{date_a, date_b, abs(balance_a)} | debts])
+
+  defp build_statement([{balance, date}, {next_balance, next_date}], debts) when balance < 0 and balance != next_balance do
+    build_statement([{next_balance, next_date}], [{date, next_date, abs(balance)} | debts])
   end
-  def build_debt_statement([{balance_a, sd}, {balance_b, ed} | statements], debts) when balance_a < 0 and balance_a != balance_b do
-    build_debt_statement([{balance_b, ed} | statements], [{sd, ed, abs(balance_a)} | debts])
+
+  defp build_statement([{balance, date}, {next_balance, next_date} | statements], debts) when balance < 0 and balance != next_balance do
+    build_statement([{next_balance, next_date} | statements], [{date, next_date, abs(balance)} | debts])
   end
-  def build_debt_statement([{_balance, _date} | statements], debts) do
-    build_debt_statement(statements, debts)
+
+  defp build_statement([{_balance, _date} | statements], debts) do
+    build_statement(statements, debts)
+  end
+
+  defp end_date(nil), do: nil
+  defp end_date(date) do
+    with {:ok, date} <- Date.from_iso8601(date),
+         date <- Date.add(date, -1)
+    do
+      Date.to_string(date)
+    end
   end
 end
