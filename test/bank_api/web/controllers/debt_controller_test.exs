@@ -28,11 +28,11 @@ defmodule BankApi.Web.DebtControllerTest do
     checking_account_id: nil}
 
   @expected_response [
-    %{"principal" => 1185.99, "start" => "2010-04-13", "end" => "2010-04-15"},
-    %{"principal" => 1035.99, "start" => "2010-04-15", "end" => "2010-04-17"},
-    %{"principal" =>  972.49, "start" => "2010-04-17", "end" => "2010-04-18"},
-    %{"principal" => 1122.49, "start" => "2010-04-18", "end" => "2010-04-19"},
-    %{"principal" =>  921.99, "start" => "2010-04-19", "end" => "2010-04-20"}
+    %{"principal" => 1185.99, "start" => "2010-04-13", "end" => "2010-04-14"},
+    %{"principal" => 1035.99, "start" => "2010-04-15", "end" => "2010-04-16"},
+    %{"principal" =>  972.49, "start" => "2010-04-17", "end" => "2010-04-17"},
+    %{"principal" => 1122.49, "start" => "2010-04-18", "end" => "2010-04-18"},
+    %{"principal" =>  921.99, "start" => "2010-04-19", "end" => "2010-04-19"}
   ]
 
   @transactions [@transaction_1, @transaction_2, @transaction_3, @transaction_4]
