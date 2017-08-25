@@ -12,14 +12,11 @@
 #
 #
 #
-alias BankApi.Bank
-alias BankApi.Repo
+alias BankApi.{Bank, Repo}
 
-BankApi.Repo.transaction(fn ->
-  {:ok, account} = Repo.insert!(:checking_accounts, name: "Account")
-  {:ok, account1} = Repo.insert!(:checking_accounts, name: "Account 1")
-  _ = Bank.create_checking_account(%{name: "Account 2"})
-  _ = Bank.create_checking_account(%{name: "Account 3"})
+Repo.transaction(fn ->
+  {:ok, account} = Bank.create_checking_account(%{name: "Account"})
+  {:ok, _account} = Bank.create_checking_account(%{name: "Account 1"})
 
   descriptions = ["Deposit", "Buy books", "Deposit", "Buy food", "buy drinks", "Payment from Joe"]
   amounts = [324.3, -223.5, 300.0, -234.5, -77.34, 400.0]
@@ -33,12 +30,10 @@ BankApi.Repo.transaction(fn ->
   ]
   0..5
   |> Enum.map(fn index ->
-    Repo.insert!(:transactions,
-      checking_account_id: account.id,
+    Bank.create_transaction(
+      %{checking_account_id: account.id,
       date: Enum.at(dates, index),
       amount: Enum.at(amounts, index),
-      description: Enum.at(descriptions, index))
+      description: Enum.at(descriptions, index)})
   end)
-
-  BankApi.TransactionsHelper.create_transactions(account1.id)
 end)
