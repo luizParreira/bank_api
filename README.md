@@ -5,8 +5,8 @@
 If you are on Linux, install docker for Linux:
 - https://docker.github.io/engine/installation/
 
-If you are on MacOS, install Docker, VirtualBox, docker-machine and NFS.
-- https://docs.docker.com/docker-for-mac/
+If you are on MacOS, install Docker-Compose, VirtualBox, docker-machine and NFS.
+- `brew install docker-compose`
 - https://www.virtualbox.org/wiki/Downloads
 - https://docs.docker.com/machine/install-machine/
 - Run `docker-machine create default --driver virtualbox --virtualbox-memory "3072"`, to create a VM.
