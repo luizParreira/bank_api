@@ -1,4 +1,7 @@
 defmodule BankApi.Bank.Transaction do
+  @moduledoc """
+  Model module responsible for handling `DoubleEntryTransactions`
+  """
   use Ecto.Schema
   import Ecto.Changeset
   alias BankApi.Bank.Transaction

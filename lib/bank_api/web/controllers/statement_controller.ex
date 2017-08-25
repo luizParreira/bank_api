@@ -3,7 +3,7 @@ defmodule BankApi.Web.StatementController do
 
   alias BankApi.Bank
   alias Bank.CheckingAccount
-  alias Bank.BuildStatement
+  alias Bank.Statement
   alias Bank.DateParser
 
   action_fallback BankApi.Web.FallbackController
@@ -20,7 +20,7 @@ defmodule BankApi.Web.StatementController do
   defp build(conn, id, start_date, end_date) do
     with (account = %CheckingAccount{}) <- Bank.get_checking_account(id),
          {:ok, start_date, end_date} <- DateParser.parse(start_of: start_date, end_of: end_date),
-         statement <- BuildStatement.build(account.id, start_date, end_date)
+         statement <- Statement.build(account.id, start_date, end_date)
     do
       render(conn, "statement.json", statement: statement)
     else
