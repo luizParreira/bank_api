@@ -1,4 +1,4 @@
-defmodule BankApi.Bank.BuildStatement do
+defmodule BankApi.Bank.Statement do
   @moduledoc """
   Module responsible for building statement for the API response
   """
@@ -11,10 +11,10 @@ defmodule BankApi.Bank.BuildStatement do
     id
     |> Bank.list_transactions(start_date, end_date)
     |> Enum.group_by(&date/1, &transactions/1)
-    |> Enum.map(fn {date, transactions} -> build_statement(id, date, transactions) end)
+    |> Enum.map(fn {date, transactions} -> serialize_statement(id, date, transactions) end)
   end
 
-  defp build_statement(id, date, transactions) do
+  defp serialize_statement(id, date, transactions) do
     %{"date" => timestamp_to_date_string(date),
      "transactions" => transactions,
       "balance" => Bank.calculate_balance(id, DateParser.end_of_day!(date))}

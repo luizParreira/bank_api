@@ -1,4 +1,7 @@
 defmodule BankApi.Bank.CheckingAccount do
+  @moduledoc """
+  CheckingAccount module for creating an account
+  """
   use Ecto.Schema
   import Ecto.Changeset
   alias BankApi.Bank.CheckingAccount

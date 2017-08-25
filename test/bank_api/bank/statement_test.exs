@@ -1,60 +1,19 @@
-defmodule BankApi.BuildStatementTest do
+defmodule BankApi.StatementTest do
   use BankApi.DataCase
 
   alias BankApi.Bank
-  alias Bank.BuildStatement
-  @account %{name: "Jhon Snow"}
-  @transaction_1 %{
-    description: "Deposit",
-    date: DateTime.from_naive!(~N[2010-04-15 14:00:00.000000Z], "Etc/UTC"),
-    amount: "150.0",
-    checking_account_id: nil}
-
-  @transaction_2 %{
-    description: "Went out for drinks",
-    date: DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC"),
-    amount: "-150.0",
-    checking_account_id: nil}
-
-  @transaction_3 %{
-    description: "Deposit",
-    date: DateTime.from_naive!(~N[2010-04-19 20:00:00.000000Z], "Etc/UTC"),
-    amount: "200.5",
-    checking_account_id: nil}
-
-  @transaction_4 %{
-    description: "Bought books on Amazon",
-    date: DateTime.from_naive!(~N[2010-04-18 14:00:00.000000Z], "Etc/UTC"),
-    amount: "-150.0",
-    checking_account_id: nil}
-
-  @transaction_5 %{
-    description: "payment from Jose",
-    date: DateTime.from_naive!(~N[2010-03-17 14:00:00.000000Z], "Etc/UTC"),
-    amount: "302.0",
-    checking_account_id: nil}
-
-  @transaction_6 %{
-    description: "payment from Ana",
-    date: DateTime.from_naive!(~N[2010-04-17 23:59:00.000000Z], "Etc/UTC"),
-    amount: "213.5",
-    checking_account_id: nil}
-
-
-  @transactions [@transaction_1, @transaction_2, @transaction_3, @transaction_4, @transaction_5, @transaction_6]
+  alias Bank.Statement
+  alias BankApi.TransactionsHelper
 
   setup do
-    {:ok, account} = Bank.create_checking_account(@account)
-    @transactions
-    |> Enum.map(&(Bank.create_transaction(%{&1 | checking_account_id: account.id})))
-
+    {:ok, account} = Bank.create_checking_account(%{name: "Jhon snow"})
+    TransactionsHelper.create_transactions(account.id)
     {:ok, id: account.id}
   end
 
-  describe "build_statement/3" do
-
+  describe "build/1" do
     test "when no date is passed in", %{id: id} do
-      statement = BuildStatement.build(id)
+      statement = Statement.build(id)
 
       expected_response = [
         %{"transactions" => [%{"description" => "payment from Jose", "amount" => 302.0, "ts" => 1268834400}],
@@ -71,11 +30,13 @@ defmodule BankApi.BuildStatementTest do
 
         assert statement == expected_response
     end
+  end
 
+  describe "build/3" do
     test "when start date and end date is passed in", %{id: id} do
       {:ok, start_date} = DateTime.from_naive(~N[2010-04-15 00:00:00], "Etc/UTC")
       {:ok, end_date} = DateTime.from_naive(~N[2010-04-18 23:59:59], "Etc/UTC")
-      statement = BuildStatement.build(id, start_date, end_date)
+      statement = Statement.build(id, start_date, end_date)
 
       expected_response = [
         %{"transactions" => [%{"description" => "Deposit", "amount" => 150.0, "ts" => 1271340000}],

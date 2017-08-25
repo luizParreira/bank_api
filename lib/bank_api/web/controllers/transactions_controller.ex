@@ -21,7 +21,8 @@ defmodule BankApi.Web.TransactionsController do
          {date, _} <- Integer.parse(date),
          {:ok, date} <- DateTime.from_unix(date),
          {:ok, amount} <- AmountValidator.validate(amount, op),
-         (transaction = %Transaction{}) <- Bank.transact(id, amount, date, desc) do
+         (transaction = %Transaction{}) <- Bank.transact(id, amount, date, desc)
+    do
       render(conn, "success.json", transaction: transaction)
     else
       nil -> {:error, :not_found}
