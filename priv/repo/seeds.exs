@@ -37,8 +37,8 @@ BankApi.Repo.transaction(fn ->
       %{checking_account_id: account.id,
       date: dates[index],
       amount: amounts[index],
-      description: description})
+      description: description[index]})
   end)
 
-  BankApi.TransactionHelper.create_transactions(account1.id)
+  BankApi.TransactionsHelper.create_transactions(account1.id)
 end)
