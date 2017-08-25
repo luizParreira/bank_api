@@ -1,19 +1,38 @@
-# BankApi
+## Build the project
 
-To start your Phoenix server:
+### Docker (recommended)
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-  * Start Phoenix endpoint with `mix phx.server`
+If you are on Linux, install docker for Linux:
+- https://docker.github.io/engine/installation/
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+If you are on MacOS, install Docker, VirtualBox, docker-machine and NFS.
+- https://docs.docker.com/docker-for-mac/
+- https://www.virtualbox.org/wiki/Downloads
+- https://docs.docker.com/machine/install-machine/
+- Run `docker-machine create default --driver virtualbox --virtualbox-memory "3072"`, to create a VM.
+- Run `eval $(docker-machine env)`
+- Install NFS https://github.com/adlogix/docker-machine-nfs
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
+### Building the project
 
-## Learn more
+1. Give execute permissions to the start script: `chmod +x script/start.sh` (from the project's root)
+2. Run `docker-compose build`
+3. Once the project is built, run `docker-compose up`
+4. Once it finishes compiling and bringing the app up, you should be able to access the app on:
+  - Run: `docker-machine ip`
+  - You should be able to access the app by routing to the docker-machine ip printed from the command above. For example, `http://192.168.99.100:4000`.
+  - Or you might have already mapped this locally to `localhost` or `dev. For example, `http://localhost:4000` or `http://dev:4000`.
 
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+### Locally
+
+You will need to have all these dependencies installed:
+
+- Elixir installed
+- Phoenix Framework
+- Postgres
+
+Once you have installed it, you should:
+
+1. Give permission to the script to execute `chmod +x script/start.sh`.
+2. Run the script `./script/start.sh`
+
