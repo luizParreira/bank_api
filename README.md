@@ -190,7 +190,7 @@ GET /api/v1/checking_account/:checking_account_id/periods_of_debt
 - 404
 
 #### Example
-GET /api/v1/checking_account/1/periods_of_debt
+`GET /api/v1/checking_account/1/periods_of_debt`
 ```javascript
 {
   "data": [
